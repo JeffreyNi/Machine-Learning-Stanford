@@ -53,10 +53,27 @@ error_val   = zeros(m, 1);
 
 % ---------------------- Sample Solution ----------------------
 
+iternum = 50;
+for i = 1:m,
+    for j = 1:iternum
+	row = 1:m;
+        sel = randperm(size(row, 2));
+        sel = sel(1:i);
+        X_train = X(sel, :);
+        y_train = y(sel, :);
 
+        [theta] = trainLinearReg(X_train, y_train, lambda);
 
+        [error_train_tmp grad_train] = linearRegCostFunction(X_train, y_train, theta, 0);
+        [error_val_tmp grad_val] = linearRegCostFunction(Xval, yval, theta, 0);
+        
+        error_train(i) += error_train_tmp;
+        error_val(i) += error_val_tmp;
+    end;
 
-
+    error_train(i) /= iternum;
+    error_val(i) /= iternum;
+end;
 
 
 % -------------------------------------------------------------
