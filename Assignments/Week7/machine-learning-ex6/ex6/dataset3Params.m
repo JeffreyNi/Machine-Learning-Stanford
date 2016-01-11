@@ -25,10 +25,31 @@ sigma = 0.3;
 
 C_array = [0.01 0.03 0.1 0.3 1 3 10 30];
 sigma_array = [0.01 0.03 0.1 0.3 1 3 10 30];
+C_size = size(C_array,2);
+sigma_size = size(sigma_array,2);
+x1 = [1 2 1];
+x2 = [0 4 -1];
+model1 = svmTrain(X, y, C, @(x1, x2) gaussianKernel(x1, x2, sigma));
+predictions = svmPredict(model1, Xval);
+err = mean(double(predictions ~= yval));
 
-
-
-
+for i = 1:C_size,
+    for j = 1:sigma_size,
+	x1 = [1 2 1];
+        x2 = [0 4 -1];
+        C_tmp = C_array(i);
+        sigma_tmp = sigma_array(j);
+        model = svmTrain(X, y, C_tmp, @(x1, x2) gaussianKernel(x1, x2, sigma_tmp));
+        predictions = svmPredict(model, Xval);
+        error = mean(double(predictions ~= yval));
+        
+        if error < err,
+	   err = error;
+           C = C_tmp;
+           sigma = sigma_tmp;
+        end;
+    end;
+end;
 
 
 % =========================================================================
